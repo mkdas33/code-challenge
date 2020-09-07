@@ -29,7 +29,7 @@ public class TransactionServiceTest {
 
     private Account createFromAccount(){
         Account account = new Account(accFromId);
-        account.setBalance(new BigDecimal(1000));
+        account.setBalance(new BigDecimal(10000));
         accountsService.createAccount(account);
         return account;
     }
@@ -40,11 +40,21 @@ public class TransactionServiceTest {
         return account;
     }
 
-    private void createFromAndToAccount(){
-        createFromAccount();
-        createToAccount();
-    }
+    @Test
+    public void transfer_multipleTransaction() throws InterruptedException {
+        Account accFrom = createFromAccount();
+        Account accTo = createToAccount();
+        Transaction transaction = new Transaction(accFrom.getAccountId(), accTo.getAccountId(), new BigDecimal(500));
 
+            for (int i=0; i<10; i++){
+                Runnable runnable = () -> {transactionService.transferMoney(transaction);};
+                Thread thread = new Thread(runnable);
+                thread.start();
+            }
+            Thread.sleep(1000);
+            assertThat(accFrom.getBalance()).isEqualTo("5000");
+            assertThat(accTo.getBalance()).isEqualTo("5500");
+    }
     @Test
     public void transfer_FailInvalidAccountToId(){
         Account accFrom = createFromAccount();
@@ -55,4 +65,6 @@ public class TransactionServiceTest {
             assertThat(ex.getMessage()).isEqualTo("Invalid account Id " + accToId);
         }
     }
+
+
 }

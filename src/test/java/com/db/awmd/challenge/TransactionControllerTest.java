@@ -2,7 +2,6 @@ package com.db.awmd.challenge;
 
 import com.db.awmd.challenge.domain.Account;
 import com.db.awmd.challenge.service.AccountsService;
-import com.db.awmd.challenge.service.TransactionService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,10 +28,6 @@ public class TransactionControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private TransactionService transactionService;
-
-    @Autowired
-   // @Mock
     private AccountsService accountsService;
 
     @Autowired

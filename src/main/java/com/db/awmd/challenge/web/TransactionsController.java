@@ -2,6 +2,7 @@ package com.db.awmd.challenge.web;
 
 import com.db.awmd.challenge.domain.Transaction;
 import com.db.awmd.challenge.exception.InvalidArgumentException;
+import com.db.awmd.challenge.exception.TransactionFailureException;
 import com.db.awmd.challenge.service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class TransactionsController {
         log.info("About to perform transaction {} ", transaction);
         try {
             transactionService.transferMoney(transaction);
-        } catch (InvalidArgumentException ex) {
+        } catch (InvalidArgumentException  | TransactionFailureException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
