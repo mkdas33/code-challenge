@@ -5,6 +5,7 @@ import com.db.awmd.challenge.domain.Transaction;
 import com.db.awmd.challenge.exception.InvalidArgumentException;
 import com.db.awmd.challenge.service.AccountsService;
 import com.db.awmd.challenge.service.TransactionService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -26,6 +28,12 @@ public class TransactionServiceTest {
 
     private final String accFromId = "Id-123";
     private final String accToId = "Id-124";
+
+    @Before
+    public void prepareTest() {
+        // Reset the existing accounts before each test.
+        accountsService.getAccountsRepository().clearAccounts();
+    }
 
     private Account createFromAccount(){
         Account account = new Account(accFromId);
@@ -46,11 +54,12 @@ public class TransactionServiceTest {
         Account accTo = createToAccount();
         Transaction transaction = new Transaction(accFrom.getAccountId(), accTo.getAccountId(), new BigDecimal(500));
 
+        Runnable runnable = () -> {transactionService.transferMoney(transaction);};
             for (int i=0; i<10; i++){
-                Runnable runnable = () -> {transactionService.transferMoney(transaction);};
                 Thread thread = new Thread(runnable);
                 thread.start();
             }
+            //Give some time so that all thread can finish their job.
             Thread.sleep(1000);
             assertThat(accFrom.getBalance()).isEqualTo("5000");
             assertThat(accTo.getBalance()).isEqualTo("5500");

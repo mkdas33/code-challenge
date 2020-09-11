@@ -17,15 +17,16 @@ import java.util.concurrent.locks.ReentrantLock;
 public class TransactionService {
 
     private final AccountsService accountService;
-    private final NotificationService notificationService;
+    private final TransactionServiceHelper helper;
+
     private final Lock withdrawLock;
     private final Lock depositLock;
 
     public TransactionService(AccountsService accountService) {
         this.accountService = accountService;
-        this.notificationService = new EmailNotificationService();
         this.withdrawLock = new ReentrantLock();
         this.depositLock = new ReentrantLock();
+        this.helper = new TransactionServiceHelper();
     }
 
     public void transferMoney(final Transaction transaction) {
@@ -147,8 +148,7 @@ public class TransactionService {
 
 
     private void notifyTransfer(final String accountId, final String message) {
-        Runnable runnable = () -> notificationService.notifyAboutTransfer(getAccount(accountId), message);
-        new Thread(runnable).start();
+        helper.notifyUser(getAccount(accountId), message);
     }
 
 }

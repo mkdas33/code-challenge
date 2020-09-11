@@ -1,0 +1,15 @@
+Below is the list of improvements I can think to make this code production ready
+
+1. getAccount(String accountId) method in AccountsRepository.java returns a Account, it is better if this method returns a Optioal type
+   i.e. Optional<Account> getAccount(String accountId). This is not mandatory for a production ready code.
+
+2. I have added TransactionServiceHelper.java to make the transaction service and the message notification service asynchronous.
+   In production it should replace with a message broker like ActiveMQ or Kafka
+
+3. We should have a database in the backend
+
+4. We should have a framework for data access layer, I would like to have Spring-Data-Jpa
+
+5. We should have a transaction layer to make the operations atomic, I would like to have JPA transaction.
+
+5. The software can be pushed to a repository as a docker container image, than pulled and deployed to different environments
